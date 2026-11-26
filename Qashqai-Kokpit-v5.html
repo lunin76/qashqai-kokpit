@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0b0d12">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Nissan Qashqai J10 — Kokpit Serwisowy</title>
+<style>
+  :root {
+    --bg-main: #0b0d12;
+    --bg-card: rgba(22, 26, 35, 0.88);
+    --border-subtle: rgba(255, 255, 255, 0.09);
+    --nissan-red: #c3002f;
+    --nissan-red-hover: #e00036;
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    --status-ok: #10b981;
+    --status-warn: #f59e0b;
+    --status-danger: #ef4444;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: radial-gradient(circle at top right, #1e1119 0%, var(--bg-main) 50%);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .container { max-width: 1460px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+
+  .card {
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  }
+
+  /* HERO HEADER - IDENTICAL ON PC */
+  .hero {
+    display: grid;
+    grid-template-columns: 370px 1fr 340px;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .car-photo-box {
+    position: relative;
+    width: 100%;
+    height: 225px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #141821;
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .car-photo-box img { width: 100%; height: 100%; object-fit: cover; }
+  .car-placeholder { text-align: center; color: var(--text-secondary); font-size: 13.5px; padding: 16px; line-height: 1.5; }
+
+  .btn-photo {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 17, 23, 0.88);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.22);
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: 0.2s;
+  }
+  .btn-photo:hover { background: var(--nissan-red); border-color: var(--nissan-red); }
+
+  .car-details { display: flex; flex-direction: column; gap: 12px; }
+
+  /* REALISTIC LICENSE PLATE IN BLACK CAR HOLDER */
+  .plate-holder {
+    display: inline-flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, #27272a 0%, #141417 55%, #09090b 100%);
+    padding: 6px 6px 4px 6px;
+    border-radius: 10px;
+    border: 1px solid #3f3f46;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    width: fit-content;
+  }
+
+  .plate-badge {
+    display: inline-flex;
+    align-items: stretch;
+    background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+    color: #0f172a;
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: 2px;
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1.5px solid #09090b;
+    height: 44px;
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.9);
+  }
+  .plate-eu {
+    background: #003399;
+    color: #fff;
+    width: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3px 0 3px 0;
+    flex-shrink: 0;
+  }
+  .plate-eu svg { width: 17px; height: 17px; display: block; }
+  .plate-country {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    line-height: 1;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  .plate-text {
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    font-family: 'Arial Narrow', 'Segoe UI', Arial, sans-serif;
+    font-weight: 900;
+  }
+  .plate-holder-bar {
+    text-align: center;
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #a1a1aa;
+    padding-top: 3px;
+    text-transform: uppercase;
+    user-select: none;
+  }
+
+  .car-title { font-size: 28px; font-weight: 800; letter-spacing: 0.5px; }
+  .car-specs { display: flex; flex-wrap: wrap; gap: 10px; font-size: 13.5px; color: var(--text-secondary); }
+  .car-specs span strong { color: var(--text-primary); }
+
+  /* ODOMETER & ACTIONS */
+  .hero-right { display: flex; flex-direction: column; gap: 12px; align-items: stretch; }
+  .odometer-box {
+    background: linear-gradient(135deg, rgba(195, 0, 47, 0.18), rgba(20, 24, 33, 0.92));
+    border: 1px solid rgba(195, 0, 47, 0.45);
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .odo-label { font-size: 12px; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 1px; }
+  .odo-value { font-size: 28px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .btn-icon {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--border-subtle);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.2s;
+  }
+  .btn-icon:hover { background: rgba(255,255,255,0.16); }
+
+  .action-row { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 8px; }
+  .btn-alert { background: var(--nissan-red); border: none; font-weight: 600; }
+  .btn-alert:hover { background: var(--nissan-red-hover); }
+  .badge-count {
+    background: #fff; color: var(--nissan-red); font-size: 11px; font-weight: 800;
+    padding: 1px 6px; border-radius: 10px; margin-left: 4px;
+  }
+
+  /* GAUGES ROW */
+  .gauges-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+  }
+
+  .gauge-card { display: flex; align-items: center; gap: 16px; }
+  .ring-wrap { position: relative; width: 84px; height: 84px; flex-shrink: 0; }
+  .ring-wrap svg { transform: rotate(-90deg); width: 84px; height: 84px; }
+  .ring-bg { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 8; }
+  .ring-prog { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.5s ease, stroke 0.3s; }
+  .ring-text {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 16px;
+  }
+
+  .gauge-info h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .gauge-info p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.4; }
+  .gauge-sub { font-size: 11.5px; margin-top: 4px; font-weight: 600; }
+
+  .skp-card {
+    display: flex; flex-direction: column; justify-content: space-between;
+    background: linear-gradient(145deg, rgba(25, 30, 42, 0.92), rgba(16, 185, 129, 0.08));
+  }
+  .skp-header { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text-secondary); }
+  .skp-date { font-size: 22px; font-weight: 800; margin: 6px 0 2px; }
+  .skp-days { font-size: 13px; font-weight: 600; }
+
+  /* MAIN BENTO GRID */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 350px 380px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  .section-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border-subtle);
+  }
+  .section-head h2 { font-size: 16px; font-weight: 700; }
+
+  /* CALENDAR */
+  .cal-nav { display: flex; align-items: center; gap: 8px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
+  .cal-dow { font-size: 11px; color: var(--text-secondary); padding-bottom: 6px; font-weight: 600; }
+  .cal-day {
+    aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border-radius: 8px; font-size: 13px; cursor: pointer; background: rgba(255,255,255,0.03);
+    position: relative; transition: 0.15s;
+  }
+  .cal-day:hover { background: rgba(255,255,255,0.12); }
+  .cal-day.empty { background: transparent; cursor: default; }
+  .cal-day.today { border: 1px solid var(--nissan-red); font-weight: 700; }
+  .cal-day.selected { background: var(--nissan-red); color: #fff; font-weight: 700; }
+  .cal-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--status-warn); position: absolute; bottom: 4px; }
+  .cal-note { margin-top: 12px; font-size: 12.5px; color: var(--text-secondary); background: rgba(0,0,0,0.28); padding: 10px; border-radius: 8px; line-height: 1.5; }
+
+  /* SPECS LIST */
+  .specs-list { display: flex; flex-direction: column; gap: 8px; }
+  .spec-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 12px; background: rgba(255,255,255,0.03); border-radius: 10px;
+    border: 1px solid transparent; transition: 0.2s; gap: 10px;
+  }
+  .spec-item:hover { border-color: var(--border-subtle); background: rgba(255,255,255,0.06); }
+  .spec-name { font-size: 13px; font-weight: 600; }
+  .spec-sub { font-size: 11.5px; color: var(--text-secondary); }
+  .spec-right { display: flex; align-items: center; gap: 8px; text-align: right; flex-shrink: 0; }
+  .spec-val { font-size: 13px; font-weight: 700; color: #e5e7eb; }
+
+  /* SERVICE HISTORY */
+  .btn-primary {
+    background: var(--nissan-red); color: #fff; border: none; padding: 8px 14px;
+    border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s;
+  }
+  .btn-primary:hover { background: var(--nissan-red-hover); }
+
+  .filter-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .tab-btn {
+    background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle);
+    color: var(--text-secondary); padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;
+  }
+  .tab-btn.active { background: #fff; color: #111; font-weight: 700; border-color: #fff; }
+
+  .service-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(275px, 1fr)); gap: 12px; }
+  .srv-card {
+    background: rgba(255,255,255,0.035); border: 1px solid var(--border-subtle);
+    border-radius: 12px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;
+    border-left: 4px solid var(--status-ok);
+  }
+  .srv-card.warn { border-left-color: var(--status-warn); }
+  .srv-card.danger { border-left-color: var(--status-danger); }
+
+  .srv-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .srv-title { font-size: 14.5px; font-weight: 700; }
+  .srv-cat { font-size: 11px; padding: 2px 8px; border-radius: 6px; background: rgba(255,255,255,0.08); color: var(--text-secondary); white-space: nowrap; }
+  .srv-meta { font-size: 12px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 3px; }
+  .srv-meta strong { color: var(--text-primary); }
+  .srv-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); }
+  .srv-status { font-size: 12px; font-weight: 700; }
+  .srv-actions { display: flex; gap: 5px; }
+
+  /* MOBILE BOTTOM BAR (HIDDEN ON PC) */
+  .mobile-dock {
+    display: none;
+  }
+
+  /* MODAL */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.78); backdrop-filter: blur(6px);
+    display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: #161a23; border: 1px solid rgba(255,255,255,0.14); border-radius: 16px;
+    width: 100%; max-width: 500px; padding: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+    max-height: 90vh; overflow-y: auto;
+  }
+  .modal h3 { font-size: 18px; margin-bottom: 16px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+  .form-group.full { grid-column: span 2; }
+  label { font-size: 12px; color: var(--text-secondary); }
+  input, select {
+    background: #0d1017; border: 1px solid rgba(255,255,255,0.15); color: #fff;
+    padding: 9px 12px; border-radius: 8px; font-size: 13.5px; outline: none; width: 100%;
+  }
+  input:focus, select:focus { border-color: var(--nissan-red); }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+
+  @media (max-width: 1200px) {
+    .hero { grid-template-columns: 1fr; }
+    .gauges-grid { grid-template-columns: repeat(2, 1fr); }
+    .main-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ANDROID / MOBILE ONE-HANDED TOUCH MODE ONLY */
+  @media (max-width: 768px) {
+    body {
+      padding: 12px 12px 88px 12px;
+    }
+    .container { gap: 14px; }
+    .card { padding: 15px; border-radius: 14px; }
+    .car-photo-box { height: 200px; }
+    .car-title { font-size: 22px; }
+    .car-specs { font-size: 12.5px; gap: 6px; }
+    .odo-value { font-size: 24px; }
+    .gauges-grid { grid-template-columns: 1fr; gap: 12px; }
+
+    /* Larger touch targets for thumbs */
+    .btn-icon { padding: 10px 14px; font-size: 13.5px; min-height: 40px; }
+    .btn-primary { padding: 11px 16px; font-size: 13.5px; min-height: 42px; }
+    .btn-photo { padding: 9px 16px; font-size: 13px; }
+    .action-row { grid-template-columns: 1fr; gap: 8px; }
+    .tab-btn { padding: 9px 14px; font-size: 13px; }
+    .filter-tabs { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+    .filter-tabs .tab-btn { flex-shrink: 0; }
+    .cal-day { font-size: 14px; min-height: 38px; }
+    .spec-item { padding: 12px; }
+    .srv-card { padding: 15px; }
+    .srv-actions .btn-icon { padding: 9px 13px; font-size: 14px; }
+
+    /* Modal single column on phone */
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group.full { grid-column: span 1; }
+    input, select { padding: 12px; font-size: 16px; }
+
+    /* Sticky bottom quick-action bar on Android */
+    .mobile-dock {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 10px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(13, 16, 23, 0.96);
+      backdrop-filter: blur(14px);
+      border-top: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 10px 14px;
+      z-index: 90;
+      box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.65);
+    }
+    .mobile-dock button {
+      width: 100%;
+      justify-content: center;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- HERO HEADER -->
+  <header class="card hero">
+    <div class="car-photo-box">
+      <img id="carImg" src="" alt="Nissan Qashqai J10" style="display:none;">
+      <div class="car-placeholder" id="carPlaceholder">
+        🚙<br><strong>Nissan Qashqai J10</strong><br>Kliknij poniżej, aby wgrać zdjęcie auta
+      </div>
+      <input type="file" id="photoInput" accept="image/*" style="display:none;">
+      <button class="btn-photo" onclick="document.getElementById('photoInput').click()">✏ Zmień zdjęcie</button>
+    </div>
+
+    <div class="car-details">
+      <div class="plate-holder" title="Tablica rejestracyjna pojazdu">
+        <div class="plate-badge">
+          <div class="plate-eu" title="Unia Europejska — Polska">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <g fill="#FFCC00">
+                <circle cx="12" cy="3.2" r="1.05"/>
+                <circle cx="16.4" cy="4.38" r="1.05"/>
+                <circle cx="19.62" cy="7.6" r="1.05"/>
+                <circle cx="20.8" cy="12" r="1.05"/>
+                <circle cx="19.62" cy="16.4" r="1.05"/>
+                <circle cx="16.4" cy="19.62" r="1.05"/>
+                <circle cx="12" cy="20.8" r="1.05"/>
+                <circle cx="7.6" cy="19.62" r="1.05"/>
+                <circle cx="4.38" cy="16.4" r="1.05"/>
+                <circle cx="3.2" cy="12" r="1.05"/>
+                <circle cx="4.38" cy="7.6" r="1.05"/>
+                <circle cx="7.6" cy="4.38" r="1.05"/>
+              </g>
+            </svg>
+            <span class="plate-country">PL</span>
+          </div>
+          <div class="plate-text">WL 8737F</div>
+        </div>
+        <div class="plate-holder-bar">• NISSAN QASHQAI • J10 •</div>
+      </div>
+
+      <h1 class="car-title">NISSAN QASHQAI J10</h1>
+      <div class="car-specs">
+        <span>Rocznik: <strong>2007</strong></span>
+        <span>•</span>
+        <span>Silnik: <strong>2.0 MR20DE (141 KM / 196 Nm)</strong></span>
+        <span>•</span>
+        <span>Napęd: <strong>4x4 CVT</strong></span>
+        <span>•</span>
+        <span>VIN: <strong>SJNFBNJ10U1084359</strong></span>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="odometer-box">
+        <div>
+          <div class="odo-label">Aktualny licznik</div>
+          <div class="odo-value"><span id="odoDisplay">114 000</span> km</div>
+        </div>
+        <button class="btn-icon" onclick="openOdoModal()">✏ Edytuj</button>
+      </div>
+      <div class="action-row">
+        <button class="btn-icon btn-alert" onclick="openAlertsModal()">🔔 Przypomnienia <span class="badge-count" id="alertCount">0</span></button>
+        <button class="btn-icon" onclick="exportJSON()">💾 Kopia JSON</button>
+        <button class="btn-icon" onclick="document.getElementById('jsonInput').click()">📂 Wczytaj</button>
+        <input type="file" id="jsonInput" accept=".json" style="display:none;" onchange="importJSON(event)">
+      </div>
+    </div>
+  </header>
+
+  <!-- GAUGES & SKP -->
+  <section class="gauges-grid">
+    <div class="card gauge-card" id="ringCard1"></div>
+    <div class="card gauge-card" id="ringCard2"></div>
+    <div class="card gauge-card" id="ringCard3"></div>
+
+    <div class="card skp-card">
+      <div class="skp-header">
+        <span>Badanie techniczne SKP 🛡</span>
+      </div>
+      <div>
+        <div style="font-size:11px; color:var(--text-secondary); letter-spacing:0.8px;">NASTĘPNY TERMIN:</div>
+        <div class="skp-date" id="skpDateDisplay">15 STY 2027</div>
+        <div class="skp-days" id="skpDaysDisplay">Pozostało 50 dni</div>
+      </div>
+      <button class="btn-icon" style="width:100%; margin-top:10px;" onclick="openSkpModal()">✏ Edytuj termin SKP</button>
+    </div>
+  </section>
+
+  <!-- MAIN BENTO GRID -->
+  <main class="main-grid">
+    <!-- CALENDAR -->
+    <section class="card">
+      <div class="section-head">
+        <h2 id="calMonthTitle">Kalendarz</h2>
+        <div class="cal-nav">
+          <button class="btn-icon" onclick="changeMonth(-1)">◀</button>
+          <button class="btn-icon" onclick="changeMonth(1)">▶</button>
+        </div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-note" id="calDayDetails">Kliknij dzień w kalendarzu, aby podejrzeć lub zaplanować serwis.</div>
+    </section>
+
+    <!-- FLUIDS & PARTS SPECS -->
+    <section class="card">
+      <div class="section-head">
+        <h2>Specyfikacja płynów i części</h2>
+        <button class="btn-icon" onclick="openSpecModal()">+ Dodaj</button>
+      </div>
+      <div class="specs-list" id="specsList"></div>
+      <p style="font-size:11.5px; color:var(--text-secondary); margin-top:12px;">
+        💡 Kliknij <strong>✏</strong> przy dowolnej pozycji, aby edytować pojemność, normę lub numer części.
+      </p>
+    </section>
+
+    <!-- SERVICE SCHEDULE & HISTORY -->
+    <section class="card">
+      <div class="section-head">
+        <h2>Harmonogram i historia wymian</h2>
+        <button class="btn-primary" onclick="openServiceModal()">+ Dodaj wymianę / przegląd</button>
+      </div>
+      <div class="filter-tabs" id="filterTabs">
+        <button class="tab-btn active" onclick="setFilter('all', this)">Wszystkie</button>
+        <button class="tab-btn" onclick="setFilter('urgent', this)">Pilne / Wkrótce</button>
+        <button class="tab-btn" onclick="setFilter('Silnik', this)">Silnik</button>
+        <button class="tab-btn" onclick="setFilter('Napęd / CVT', this)">Skrzynia CVT / 4x4</button>
+        <button class="tab-btn" onclick="setFilter('Formalności (SKP / OC)', this)">SKP / OC</button>
+      </div>
+      <div class="service-list" id="serviceList"></div>
+    </section>
+  </main>
+</div>
+
+<!-- ANDROID / MOBILE STICKY QUICK-ACTION BAR -->
+<div class="mobile-dock">
+  <button class="btn-icon" onclick="openOdoModal()">🔢 Licznik km</button>
+  <button class="btn-primary" onclick="openServiceModal()">+ Dodaj serwis</button>
+</div>
+
+<!-- MODAL: ADD / EDIT SERVICE -->
+<div class="modal-backdrop" id="serviceModal">
+  <div class="modal">
+    <h3>Dodaj / Edytuj czynność serwisową</h3>
+    <input type="hidden" id="srvId">
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Nazwa wymiany lub przeglądu *</label>
+        <input type="text" id="srvName" placeholder="np. Wymiana oleju silnikowego + filtr">
+      </div>
+      <div class="form-group">
+        <label>Kategoria</label>
+        <select id="srvCat">
+          <option value="Napęd / CVT">Napęd / CVT</option>
+          <option value="Silnik">Silnik</option>
+          <option value="Hamulce i opony">Hamulce i opony</option>
+          <option value="Formalności (SKP / OC)">Formalności (SKP / OC)</option>
+          <option value="Inne">Inne</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Przypisz do głównego pierścienia</label>
+        <select id="srvRing">
+          <option value="0">Brak (tylko na liście)</option>
+          <option value="1">Pierścień 1: Olej CVT NS-2</option>
+          <option value="2">Pierścień 2: Olej silnikowy 5W-30</option>
+          <option value="3">Pierścień 3: Dyferencjał 4x4</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Data ostatniego wykonania</label>
+        <input type="date" id="srvLastDate">
+      </div>
+      <div class="form-group">
+        <label>Przebieg przy wykonaniu (km)</label>
+        <input type="number" id="srvLastKm" placeholder="110000">
+      </div>
+      <div class="form-group">
+        <label>Następny termin (data)</label>
+        <input type="date" id="srvNextDate">
+      </div>
+      <div class="form-group">
+        <label>Interwał km (0 = tylko po dacie)</label>
+        <input type="number" id="srvIntervalKm" value="15000">
+      </div>
+      <div class="form-group">
+        <label>Koszt (PLN)</label>
+        <input type="number" id="srvCost" placeholder="350">
+      </div>
+      <div class="form-group">
+        <label>Użyte części / notatka</label>
+        <input type="text" id="srvNotes" placeholder="np. Mann W67/1, Valvoline 5W30">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-icon" onclick="closeModal('serviceModal')">Anuluj</button>
+      <button class="btn-primary" onclick="saveService()">Zapisz wpis</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: EDIT SPEC -->
+<div class="modal-backdrop" id="specModal">
+  <div class="modal">
+    <h3>Edytuj specyfikację płynu / części</h3>
+    <input type="hidden" id="specIndex">
+    <div class="form-group">
+      <label>Podzespół / Nazwa</label>
+      <input type="text" id="specName" placeholder="np. Olej CVT (tylko NS-2)">
+    </div>
+    <div class="form-group">
+      <label>Wartość / Pojemność / Numer części</label>
+      <input type="text" id="specValue" placeholder="np. 7,8 L (stat. ~5 L)">
+    </div>
+    <div class="form-group">
+      <label>Dodatkowa uwaga / Norma</label>
+      <input type="text" id="specNote" placeholder="np. Jatco JF011E • filtr wymiennika">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-icon" id="btnDeleteSpec" onclick="deleteSpec()" style="margin-right:auto; color:#ef4444;">Usuń</button>
+      <button class="btn-icon" onclick="closeModal('specModal')">Anuluj</button>
+      <button class="btn-primary" onclick="saveSpec()">Zapisz</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ODOMETER -->
+<div class="modal-backdrop" id="odoModal">
+  <div class="modal" style="max-width:360px;">
+    <h3>Aktualizacja przebiegu</h3>
+    <div class="form-group">
+      <label>Aktualny stan licznika (km)</label>
+      <input type="number" id="odoInput">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-icon" onclick="closeModal('odoModal')">Anuluj</button>
+      <button class="btn-primary" onclick="saveOdo()">Zapisz przebieg</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: SKP -->
+<div class="modal-backdrop" id="skpModal">
+  <div class="modal" style="max-width:360px;">
+    <h3>Termin badania technicznego SKP</h3>
+    <div class="form-group">
+      <label>Data następnego przeglądu SKP</label>
+      <input type="date" id="skpInput">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-icon" onclick="closeModal('skpModal')">Anuluj</button>
+      <button class="btn-primary" onclick="saveSkp()">Zapisz termin</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ALERTS -->
+<div class="modal-backdrop" id="alertsModal">
+  <div class="modal">
+    <h3>🔔 Aktywne przypomnienia serwisowe</h3>
+    <div id="alertsList" style="display:flex; flex-direction:column; gap:10px; max-height:350px; overflow-y:auto;"></div>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="closeModal('alertsModal')">Zamknij</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'qashqai_j10_cockpit_v5';
+
+function getTodayISO() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+const defaultData = {
+  odometer: 114000,
+  skpDate: '2027-01-15',
+  photo: '',
+  specs: [
+    { name: 'Olej CVT (tylko NS-2)', value: '7,8 L (stat. ~5 L)', note: 'Skrzynia Jatco JF011E • Norma Nissan NS-2' },
+    { name: 'Olej silnikowy 5W-30', value: '4,4 L (z filtrem)', note: 'Silnik 2.0 MR20DE • ACEA A3/B4 lub A5/B5' },
+    { name: 'Dyferencjał i rozdzielcza 4x4', value: '0,55 L + 0,35 L', note: 'Olej przekładniowy 80W-90 / 75W-90 GL-5' },
+    { name: 'Świece zapłonowe irydowe', value: 'Denso FXE20HR11', note: 'Zamiennik: NGK PLZKAR6A-11 (4 szt.)' },
+    { name: 'Płyn chłodniczy', value: 'Nissan L248 (~7,2 L)', note: 'Bezkrzemianowy na bazie glikolu (zielony/niebieski)' },
+    { name: 'Płyn hamulcowy', value: 'DOT 4 (~1,0 L)', note: 'Wymiana co 2 lata' },
+    { name: 'Opony / Moment kół', value: '215/60 R17 • 113 Nm', note: 'Ciśnienie: 2.3 bar przód / 2.1 bar tył' }
+  ],
+  services: [
+    {
+      id: 1,
+      name: 'Wymiana oleju CVT NS-2 + filtr wymiennika',
+      category: 'Napęd / CVT',
+      ring: 1,
+      lastDate: '2023-05-10',
+      lastKm: 62000,
+      nextDate: '2027-05-10',
+      intervalKm: 60000,
+      cost: 850,
+      notes: 'Olej Nissan NS-2 + filtr oleju chłodnicy CVT'
+    },
+    {
+      id: 2,
+      name: 'Olej silnikowy 5W-30 + filtr oleju i powietrza',
+      category: 'Silnik',
+      ring: 2,
+      lastDate: '2026-04-12',
+      lastKm: 108500,
+      nextDate: '2027-04-12',
+      intervalKm: 10000,
+      cost: 340,
+      notes: 'Valvoline SynPower 5W-30 + filtry Mann'
+    },
+    {
+      id: 3,
+      name: 'Olej w tylnym dyferencjale i skrzyni rozdzielczej 4x4',
+      category: 'Napęd / CVT',
+      ring: 3,
+      lastDate: '2025-09-20',
+      lastKm: 102000,
+      nextDate: '2028-09-20',
+      intervalKm: 40000,
+      cost: 220,
+      notes: 'Motul Gear 300 75W-90 GL-5'
+    },
+    {
+      id: 4,
+      name: 'Ubezpieczenie OC / AC / Assistance',
+      category: 'Formalności (SKP / OC)',
+      ring: 0,
+      lastDate: '2026-02-01',
+      lastKm: 106000,
+      nextDate: '2027-02-01',
+      intervalKm: 0,
+      cost: 920,
+      notes: 'Polisa roczna'
+    }
+  ]
+};
+
+let appData;
+try {
+  appData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || JSON.parse(JSON.stringify(defaultData));
+} catch (e) {
+  appData = JSON.parse(JSON.stringify(defaultData));
+}
+
+let currentFilter = 'all';
+let calDate = new Date();
+let selectedCalDate = getTodayISO();
+
+function saveData() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+  } catch (e) {
+    alert('Uwaga: Zdjęcie jest zbyt duże do zapisania w pamięci przeglądarki. Wybierz mniejszy plik zdjęcia.');
+  }
+  renderAll();
+}
+
+document.getElementById('photoInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    appData.photo = ev.target.result;
+    saveData();
+  };
+  reader.readAsDataURL(file);
+});
+
+function getServiceStatus(srv) {
+  const today = new Date(getTodayISO());
+  let kmPct = 100;
+  let kmLeft = null;
+
+  if (srv.intervalKm > 0) {
+    const driven = appData.odometer - srv.lastKm;
+    kmLeft = srv.intervalKm - driven;
+    kmPct = Math.max(0, Math.min(100, Math.round((kmLeft / srv.intervalKm) * 100)));
+  }
+
+  let daysLeft = null;
+  let datePct = 100;
+  if (srv.nextDate) {
+    const next = new Date(srv.nextDate);
+    daysLeft = Math.ceil((next - today) / (1000 * 60 * 60 * 24));
+    const totalDays = srv.lastDate ? Math.max(1, (next - new Date(srv.lastDate)) / (1000 * 60 * 60 * 24)) : 365;
+    datePct = Math.max(0, Math.min(100, Math.round((daysLeft / totalDays) * 100)));
+  }
+
+  const pct = srv.intervalKm > 0 && srv.nextDate ? Math.min(kmPct, datePct) : (srv.intervalKm > 0 ? kmPct : datePct);
+
+  let level = 'ok';
+  let color = 'var(--status-ok)';
+  if ((kmLeft !== null && kmLeft <= 0) || (daysLeft !== null && daysLeft <= 0)) {
+    level = 'danger'; color = 'var(--status-danger)';
+  } else if ((kmLeft !== null && kmLeft <= 1500) || (daysLeft !== null && daysLeft <= 30) || pct <= 20) {
+    level = 'warn'; color = 'var(--status-warn)';
+  }
+
+  return { pct, kmLeft, daysLeft, level, color };
+}
+
+function renderRings() {
+  const ringConfigs = [
+    { ring: 1, fallbackTitle: 'Olej CVT NS-2' },
+    { ring: 2, fallbackTitle: 'Olej silnikowy 5W-30' },
+    { ring: 3, fallbackTitle: 'Dyferencjał 4x4' }
+  ];
+
+  ringConfigs.forEach(cfg => {
+    const el = document.getElementById('ringCard' + cfg.ring);
+    const srv = appData.services.find(s => Number(s.ring) === cfg.ring);
+    if (!srv) {
+      el.innerHTML = `<div class="gauge-info"><h3>${cfg.fallbackTitle}</h3><p>Brak przypisanego serwisu</p></div>`;
+      return;
+    }
+    const st = getServiceStatus(srv);
+    const radius = 34;
+    const circ = 2 * Math.PI * radius;
+    const offset = circ - (st.pct / 100) * circ;
+
+    let subText = '';
+    if (st.kmLeft !== null) subText += st.kmLeft >= 0 ? `Pozostało ${st.kmLeft.toLocaleString('pl-PL')} km` : `Przekroczono o ${Math.abs(st.kmLeft).toLocaleString('pl-PL')} km!`;
+    if (st.daysLeft !== null) subText += (subText ? ' • ' : '') + (st.daysLeft >= 0 ? `${st.daysLeft} dni` : `${Math.abs(st.daysLeft)} dni po terminie`);
+
+    el.innerHTML = `
+      <div class="ring-wrap">
+        <svg>
+          <circle class="ring-bg" cx="42" cy="42" r="${radius}"></circle>
+          <circle class="ring-prog" cx="42" cy="42" r="${radius}" stroke="${st.color}"
+            stroke-dasharray="${circ}" stroke-dashoffset="${offset}"></circle>
+        </svg>
+        <div class="ring-text" style="color:${st.color}">${st.pct}%</div>
+      </div>
+      <div class="gauge-info">
+        <h3>${srv.name.split('+')[0].trim()}</h3>
+        <p>${subText}</p>
+        <div class="gauge-sub" style="color:${st.color}">
+          ${st.level === 'danger' ? '⚠ Wymagana natychmiastowa wymiana' : st.level === 'warn' ? '⏳ Zbliża się termin serwisu' : '✓ Stan prawidłowy'}
+        </div>
+      </div>
+    `;
+  });
+}
+
+function renderSkp() {
+  const today = new Date(getTodayISO());
+  const skp = new Date(appData.skpDate);
+  const diff = Math.ceil((skp - today) / (1000 * 60 * 60 * 24));
+  const months = ['STY','LUT','MAR','KWI','MAJ','CZE','LIP','SIE','WRZ','PAŹ','LIS','GRU'];
+  document.getElementById('skpDateDisplay').textContent = `${skp.getDate()} ${months[skp.getMonth()]} ${skp.getFullYear()}`;
+  const daysEl = document.getElementById('skpDaysDisplay');
+  if (diff >= 0) {
+    daysEl.textContent = `Pozostało ${diff} dni`;
+    daysEl.style.color = diff <= 30 ? 'var(--status-warn)' : 'var(--status-ok)';
+  } else {
+    daysEl.textContent = `Przekroczono o ${Math.abs(diff)} dni!`;
+    daysEl.style.color = 'var(--status-danger)';
+  }
+}
+
+function renderSpecs() {
+  const list = document.getElementById('specsList');
+  list.innerHTML = appData.specs.map((item, idx) => `
+    <div class="spec-item">
+      <div>
+        <div class="spec-name">${item.name}</div>
+        <div class="spec-sub">${item.note || ''}</div>
+      </div>
+      <div class="spec-right">
+        <span class="spec-val">${item.value}</span>
+        <button class="btn-icon" style="padding:4px 8px;" onclick="openSpecModal(${idx})">✏</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderServices() {
+  const list = document.getElementById('serviceList');
+  let filtered = appData.services;
+  if (currentFilter === 'urgent') {
+    filtered = filtered.filter(s => getServiceStatus(s).level !== 'ok');
+  } else if (currentFilter !== 'all') {
+    filtered = filtered.filter(s => s.category === currentFilter);
+  }
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div style="color:var(--text-secondary); font-size:13px; padding:20px;">Brak wpisów w tej kategorii.</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(srv => {
+    const st = getServiceStatus(srv);
+    const nextKm = srv.intervalKm > 0 ? (Number(srv.lastKm) + Number(srv.intervalKm)).toLocaleString('pl-PL') + ' km' : 'Wg daty';
+    return `
+      <div class="srv-card ${st.level}">
+        <div>
+          <div class="srv-top">
+            <div class="srv-title">${srv.name}</div>
+            <span class="srv-cat">${srv.category}</span>
+          </div>
+          <div class="srv-meta" style="margin-top:8px;">
+            <span>Ostatnio: <strong>${srv.lastDate || '-'}</strong> (${Number(srv.lastKm).toLocaleString('pl-PL')} km)</span>
+            <span>Następna: <strong>${srv.nextDate || '-'}</strong> / <strong>${nextKm}</strong></span>
+            ${srv.notes ? `<span>Części: ${srv.notes}</span>` : ''}
+          </div>
+        </div>
+        <div class="srv-footer">
+          <span class="srv-status" style="color:${st.color}">
+            ${st.kmLeft !== null ? (st.kmLeft >= 0 ? `Za ${st.kmLeft.toLocaleString('pl-PL')} km` : `Po terminie (${st.kmLeft} km)`) : ''}
+            ${st.kmLeft !== null && st.daysLeft !== null ? ' • ' : ''}
+            ${st.daysLeft !== null ? (st.daysLeft >= 0 ? `${st.daysLeft} dni` : `${Math.abs(st.daysLeft)} dni temu`) : ''}
+          </span>
+          <div class="srv-actions">
+            <button class="btn-icon" style="padding:4px 8px;" title="Oznacz jako wykonane dziś" onclick="markDone(${srv.id})">✓</button>
+            <button class="btn-icon" style="padding:4px 8px;" title="Edytuj" onclick="openServiceModal(${srv.id})">✏</button>
+            <button class="btn-icon" style="padding:4px 8px; color:#ef4444;" title="Usuń" onclick="deleteService(${srv.id})">🗑</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderCalendar() {
+  const year = calDate.getFullYear();
+  const month = calDate.getMonth();
+  const monthNames = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
+  document.getElementById('calMonthTitle').textContent = `${monthNames[month]} ${year}`;
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const startOffset = firstDay === 0 ? 6 : firstDay - 1;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const todayISO = getTodayISO();
+
+  const eventsMap = {};
+  appData.services.forEach(s => {
+    if (s.nextDate) {
+      eventsMap[s.nextDate] = eventsMap[s.nextDate] || [];
+      eventsMap[s.nextDate].push(s.name);
+    }
+  });
+  if (appData.skpDate) {
+    eventsMap[appData.skpDate] = eventsMap[appData.skpDate] || [];
+    eventsMap[appData.skpDate].push('Badanie techniczne SKP');
+  }
+
+  let html = ['Pn','Wt','Śr','Cz','Pt','So','Nd'].map(d => `<div class="cal-dow">${d}</div>`).join('');
+  for (let i = 0; i < startOffset; i++) html += `<div class="cal-day empty"></div>`;
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const iso = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const isToday = iso === todayISO;
+    const isSelected = iso === selectedCalDate;
+    const hasEvent = !!eventsMap[iso];
+    html += `
+      <div class="cal-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}" onclick="selectCalDay('${iso}')">
+        ${d}
+        ${hasEvent ? '<span class="cal-dot"></span>' : ''}
+      </div>
+    `;
+  }
+  document.getElementById('calGrid').innerHTML = html;
+
+  const noteEl = document.getElementById('calDayDetails');
+  if (selectedCalDate && eventsMap[selectedCalDate]) {
+    noteEl.innerHTML = `📅 <strong>${selectedCalDate}:</strong><br>• ${eventsMap[selectedCalDate].join('<br>• ')}`;
+  } else if (selectedCalDate) {
+    noteEl.innerHTML = `📅 <strong>${selectedCalDate}:</strong> Brak zaplanowanych serwisów. <a href="#" style="color:#fff;" onclick="openServiceModal(null, '${selectedCalDate}'); return false;">+ Zaplanuj na ten dzień</a>`;
+  }
+}
+
+function changeMonth(delta) {
+  calDate.setMonth(calDate.getMonth() + delta);
+  renderCalendar();
+}
+
+function selectCalDay(iso) {
+  selectedCalDate = iso;
+  renderCalendar();
+}
+
+function updateAlerts() {
+  const alerts = [];
+  appData.services.forEach(s => {
+    const st = getServiceStatus(s);
+    if (st.level !== 'ok') alerts.push({ title: s.name, level: st.level, km: st.kmLeft, days: st.daysLeft });
+  });
+  const skpDiff = Math.ceil((new Date(appData.skpDate) - new Date(getTodayISO())) / (1000 * 60 * 60 * 24));
+  if (skpDiff <= 30) alerts.push({ title: 'Badanie techniczne SKP', level: skpDiff <= 0 ? 'danger' : 'warn', days: skpDiff });
+
+  document.getElementById('alertCount').textContent = alerts.length;
+  const listEl = document.getElementById('alertsList');
+  if (alerts.length === 0) {
+    listEl.innerHTML = `<p style="color:var(--status-ok);">✓ Wszystkie serwisy i płyny w normie. Brak pilnych alertów.</p>`;
+  } else {
+    listEl.innerHTML = alerts.map(a => `
+      <div class="spec-item" style="border-left:4px solid ${a.level === 'danger' ? 'var(--status-danger)' : 'var(--status-warn)'}">
+        <div>
+          <div class="spec-name">${a.title}</div>
+          <div class="spec-sub">
+            ${a.km !== undefined && a.km !== null ? `Pozostało km: ${a.km} ` : ''}
+            ${a.days !== undefined && a.days !== null ? `• Dni do terminu: ${a.days}` : ''}
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function openOdoModal() {
+  document.getElementById('odoInput').value = appData.odometer;
+  document.getElementById('odoModal').classList.add('open');
+}
+function saveOdo() {
+  const val = parseInt(document.getElementById('odoInput').value, 10);
+  if (!isNaN(val) && val >= 0) { appData.odometer = val; saveData(); }
+  closeModal('odoModal');
+}
+
+function openSkpModal() {
+  document.getElementById('skpInput').value = appData.skpDate;
+  document.getElementById('skpModal').classList.add('open');
+}
+function saveSkp() {
+  const val = document.getElementById('skpInput').value;
+  if (val) { appData.skpDate = val; saveData(); }
+  closeModal('skpModal');
+}
+
+function openAlertsModal() { updateAlerts(); document.getElementById('alertsModal').classList.add('open'); }
+
+function openServiceModal(id = null, presetDate = '') {
+  const today = getTodayISO();
+  const nextYear = new Date();
+  nextYear.setFullYear(nextYear.getFullYear() + 1);
+  const nextYearISO = nextYear.toISOString().split('T')[0];
+
+  const srv = id ? appData.services.find(s => s.id === id) : null;
+  document.getElementById('srvId').value = srv ? srv.id : '';
+  document.getElementById('srvName').value = srv ? srv.name : '';
+  document.getElementById('srvCat').value = srv ? srv.category : 'Silnik';
+  document.getElementById('srvRing').value = srv ? srv.ring : 0;
+  document.getElementById('srvLastDate').value = srv ? srv.lastDate : today;
+  document.getElementById('srvLastKm').value = srv ? srv.lastKm : appData.odometer;
+  document.getElementById('srvNextDate').value = srv ? srv.nextDate : (presetDate || nextYearISO);
+  document.getElementById('srvIntervalKm').value = srv ? srv.intervalKm : 15000;
+  document.getElementById('srvCost').value = srv ? srv.cost : '';
+  document.getElementById('srvNotes').value = srv ? srv.notes : '';
+  document.getElementById('serviceModal').classList.add('open');
+}
+
+function saveService() {
+  const name = document.getElementById('srvName').value.trim();
+  if (!name) return alert('Podaj nazwę czynności serwisowej.');
+  const idVal = document.getElementById('srvId').value;
+  const obj = {
+    id: idVal ? Number(idVal) : Date.now(),
+    name,
+    category: document.getElementById('srvCat').value,
+    ring: Number(document.getElementById('srvRing').value),
+    lastDate: document.getElementById('srvLastDate').value,
+    lastKm: Number(document.getElementById('srvLastKm').value) || 0,
+    nextDate: document.getElementById('srvNextDate').value,
+    intervalKm: Number(document.getElementById('srvIntervalKm').value) || 0,
+    cost: Number(document.getElementById('srvCost').value) || 0,
+    notes: document.getElementById('srvNotes').value.trim()
+  };
+
+  if (idVal) {
+    const idx = appData.services.findIndex(s => s.id === Number(idVal));
+    if (idx > -1) appData.services[idx] = obj;
+  } else {
+    appData.services.unshift(obj);
+  }
+  closeModal('serviceModal');
+  saveData();
+}
+
+function markDone(id) {
+  const srv = appData.services.find(s => s.id === id);
+  if (!srv) return;
+  srv.lastKm = appData.odometer;
+  srv.lastDate = getTodayISO();
+  const next = new Date();
+  next.setFullYear(next.getFullYear() + 1);
+  srv.nextDate = next.toISOString().split('T')[0];
+  saveData();
+}
+
+function deleteService(id) {
+  if (!confirm('Usunąć ten wpis serwisowy?')) return;
+  appData.services = appData.services.filter(s => s.id !== id);
+  saveData();
+}
+
+function openSpecModal(idx = null) {
+  const isEdit = idx !== null;
+  document.getElementById('specIndex').value = isEdit ? idx : '';
+  document.getElementById('specName').value = isEdit ? appData.specs[idx].name : '';
+  document.getElementById('specValue').value = isEdit ? appData.specs[idx].value : '';
+  document.getElementById('specNote').value = isEdit ? appData.specs[idx].note : '';
+  document.getElementById('btnDeleteSpec').style.display = isEdit ? 'inline-block' : 'none';
+  document.getElementById('specModal').classList.add('open');
+}
+
+function saveSpec() {
+  const idxVal = document.getElementById('specIndex').value;
+  const item = {
+    name: document.getElementById('specName').value.trim(),
+    value: document.getElementById('specValue').value.trim(),
+    note: document.getElementById('specNote').value.trim()
+  };
+  if (!item.name) return;
+  if (idxVal !== '') appData.specs[Number(idxVal)] = item;
+  else appData.specs.push(item);
+  closeModal('specModal');
+  saveData();
+}
+
+function deleteSpec() {
+  const idxVal = document.getElementById('specIndex').value;
+  if (idxVal !== '') {
+    appData.specs.splice(Number(idxVal), 1);
+    closeModal('specModal');
+    saveData();
+  }
+}
+
+function setFilter(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderServices();
+}
+
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `Nissan-Qashqai-J10-serwis-${appData.odometer}km.json`;
+  a.click();
+}
+
+function importJSON(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const parsed = JSON.parse(ev.target.result);
+      if (parsed.odometer !== undefined && parsed.services) {
+        appData = parsed;
+        saveData();
+        alert('Pomyślnie wczytano kopię danych!');
+      }
+    } catch (err) {
+      alert('Błąd pliku JSON.');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function renderAll() {
+  document.getElementById('odoDisplay').textContent = Number(appData.odometer).toLocaleString('pl-PL');
+  const img = document.getElementById('carImg');
+  const ph = document.getElementById('carPlaceholder');
+  if (appData.photo) {
+    img.src = appData.photo;
+    img.style.display = 'block';
+    ph.style.display = 'none';
+  }
+  renderRings();
+  renderSkp();
+  renderCalendar();
+  renderSpecs();
+  renderServices();
+  updateAlerts();
+}
+
+renderAll();
+</script>
+</body>
+</html>
