@@ -1152,11 +1152,9 @@ function renderAll() {
   document.getElementById('odoDisplay').textContent = Number(appData.odometer).toLocaleString('pl-PL');
   const img = document.getElementById('carImg');
   const ph = document.getElementById('carPlaceholder');
-  if (appData.photo) {
-    img.src = appData.photo;
-    img.style.display = 'block';
-    ph.style.display = 'none';
-  }
+  img.src = 'NISSAN%20QASHQAI%20J10_JPG.png';
+  img.style.display = 'block';
+  ph.style.display = 'none';
   renderRings();
   renderSkp();
   renderCalendar();
