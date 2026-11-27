@@ -378,6 +378,7 @@
     }
   }
 </style>
+  <script src="https://alcdn.msauth.net/browser/2.39.0/js/msal-browser.min.js"></script>
 </head>
 <body>
 
@@ -647,8 +648,21 @@
 </div>
 
 <script>
+  const MS_CLIENT_ID = '6924d070-e183-4d85-ba34-caadd7cbcfae';
 const STORAGE_KEY = 'qashqai_j10_cockpit_v5';
+  const msalConfig = {
+  auth: {
+    clientId: MS_CLIENT_ID,
+    authority: 'https://login.microsoftonline.com/consumers',
+    redirectUri: window.location.origin + window.location.pathname
+  },
+  cache: {
+    cacheLocation: 'localStorage',
+    storeAuthStateInCookie: false
+  }
+};
 
+const msalInstance = new msal.PublicClientApplication(msalConfig);
 function getTodayISO() {
   const now = new Date();
   const y = now.getFullYear();
